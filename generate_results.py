@@ -42,15 +42,16 @@ with torch.no_grad():
     n_samples = 0
     for features, labels in test_loader:
         features = features.to(device)
-        labels = labels.to(device).reshape(batch_size, 1)
+        labels = labels.to(device)
         outputs = model(features)
         # max returns (value ,index)
         predicted = outputs.data
         actuals = labels
 
         n_samples += labels.size(0)
-        n_correct += (torch.round(predicted) == actuals).sum().item()
-
+        n_correct += ((predicted > 0.5) == actuals.float()).sum().item()
+        print((predicted > 0.5).sum())
+        print((actuals.float()).sum())
     acc = 100.0 * n_correct / n_samples
     print(f'Accuracy of the network on the {n_samples} test samples: {acc} %')
 
@@ -82,7 +83,7 @@ for img_path in noisy_imgs:
     for window in windows:
         features = torch.from_numpy(window).to(device)
         with torch.no_grad():
-            out = round(model(features).item())
+            out = np.float32(model(features).item() > 0.5)
         predicted_img[x, y] = out
         if y < (predicted_img.shape[0] - 1):
             y += 1

@@ -15,7 +15,7 @@ from skimage.util import view_as_windows
 # load the model in mem
 model = joblib.load('model.pkl')
 folder = 'qr_dataset'
-batch_size = 408*408
+batch_size = 100
 
 # first, we'll simply evaluate performance on the tabular test dataset
 # then, we'll generate some output images to do some visual inspection.
@@ -50,10 +50,8 @@ with torch.no_grad():
 
         n_samples += labels.size(0)
         n_correct += ((predicted > 0.5) == actuals.float()).sum().item()
-        print((predicted > 0.5).sum())
-        print((actuals.float()).sum())
     acc = 100.0 * n_correct / n_samples
-    print(f'Accuracy of the network on the {n_samples} test samples: {acc} %')
+    print(f'Accuracy of the network on the {n_correct/n_samples} test samples: {acc} %')
 
 
 # now to generate output images, we'll read each noisy img
